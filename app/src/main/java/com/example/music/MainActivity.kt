@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.music.databinding.ActivityMainBinding
 import java.io.File
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
@@ -117,6 +118,16 @@ class MainActivity : AppCompatActivity() {
             cursor.close()
         }
         return tempList
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!PlayerActivity.isPlaying && PlayerActivity.musicService != null){
+            PlayerActivity.musicService!!.stopForeground(true)
+            PlayerActivity.musicService!!.mediaPlayer!!.release()
+            PlayerActivity.musicService = null
+            exitProcess(1)
+        }
     }
 
 }
