@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.drawable.ColorDrawable
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.audiofx.LoudnessEnhancer
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.view.LayoutInflater
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -16,8 +19,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.music.databinding.ActivityPlayerBinding
+import com.example.music.databinding.AudioBoosterBinding
 import com.example.music.fragment.NowPlaying
 import com.example.music.service.MusicService
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionListener {
     companion object{
@@ -29,8 +34,8 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         var musicService: MusicService? = null
         var repeat: Boolean = false
         var nowPlayingId: String = ""
-        var fIndex: Int = -1
-        var isFavourite: Boolean = false
+        lateinit var loudnessEnhancer: LoudnessEnhancer
+
 
 
 
@@ -42,6 +47,30 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initializeLayout()
+
+        //audio booster feature
+        binding.boosterBtnPA.setOnClickListener {
+            val customDialogB = LayoutInflater.from(this).inflate(R.layout.audio_booster, binding.root, false)
+            val bindingB = AudioBoosterBinding.bind(customDialogB)
+            val dialogB = MaterialAlertDialogBuilder(this).setView(customDialogB)
+                .setOnCancelListener { playMusic() }
+                .setPositiveButton("OK"){self, _ ->
+                    loudnessEnhancer.setTargetGain(bindingB.verticalBar.progress * 100)
+                    playMusic()
+                    self.dismiss()
+                }
+                .setBackground(ColorDrawable(0x803700B3.toInt()))
+                .create()
+            dialogB.show()
+
+            bindingB.verticalBar.progress = loudnessEnhancer.targetGain.toInt()/100
+            bindingB.progressText.text = "Audio Boost\n\n${loudnessEnhancer.targetGain.toInt()/10} %"
+            bindingB.verticalBar.setOnProgressChangeListener {
+                bindingB.progressText.text = "Audio Boost\n\n${it*10} %"
+            }
+            setDialogBtnBackground(this, dialogB)
+        }
+
         binding.backBtnPA.setOnClickListener { finish() }
         binding.playPauseBtnPA.setOnClickListener {  if (isPlaying) pauseMusic()
             else playMusic()
@@ -111,6 +140,8 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
           musicService!!.mediaPlayer!!.setOnCompletionListener(this)
           nowPlayingId = musicListPA[songPosition].id
           playMusic()
+          loudnessEnhancer = LoudnessEnhancer(musicService!!.mediaPlayer!!.audioSessionId)
+          loudnessEnhancer.enabled = true
       }catch (e: Exception){
           Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()}
 

@@ -10,6 +10,8 @@
     <style name="splash_screen" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
-
+    <!--    Background as well as text color for alert dialog buttons-->
+    <attr name="dialogTextColor" format="color"/>
+    <attr name="dialogBtnBackground" format="color"/>
 
 </resources>
