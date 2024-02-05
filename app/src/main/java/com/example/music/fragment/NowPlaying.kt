@@ -29,7 +29,6 @@ class NowPlaying : Fragment() {
         binding.root.visibility = View.INVISIBLE
         binding.playPauseBtnNP.setOnClickListener {
             if (PlayerActivity.isPlaying) pauseMusic() else playMusic()
-
         }
 
         binding.nextBtnNP.setOnClickListener {
@@ -39,7 +38,7 @@ class NowPlaying : Fragment() {
                 .load(PlayerActivity.musicListPA[PlayerActivity.songPosition].artUri)
                 .apply(RequestOptions().placeholder(R.drawable.music_player_icon_slash_screen).centerCrop())
                 .into(binding.songImgNP)
-            binding.songNameNP.text = PlayerActivity.musicListPA[PlayerActivity.songPosition].title
+         binding.songNameNP.text = PlayerActivity.musicListPA[PlayerActivity.songPosition].title
             playMusic()
         }
         binding.root.setOnClickListener {
@@ -58,7 +57,7 @@ class NowPlaying : Fragment() {
         if (PlayerActivity.musicService != null){
             binding.root.visibility = View.VISIBLE
             binding.songNameNP.isSelected = true
-            Glide.with(this)
+            Glide.with(requireContext())
                 .load(PlayerActivity.musicListPA[PlayerActivity.songPosition].artUri)
                 .apply(RequestOptions().placeholder(R.drawable.music_player_icon_slash_screen).centerCrop())
                 .into(binding.songImgNP)

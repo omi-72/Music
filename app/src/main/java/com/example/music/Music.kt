@@ -1,6 +1,8 @@
 package com.example.music
 
+import android.media.MediaMetadataRetriever
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 data class Music(
     val id:String,
@@ -18,6 +20,7 @@ fun formatDuration(duration: Long):String{
             minutes* TimeUnit.SECONDS.convert(1, TimeUnit.MINUTES))
     return String.format("%02d:%02d", minutes, seconds)
 }
+
 fun setSongPosition(increment: Boolean){
     if(!PlayerActivity.repeat){
         if(increment)
@@ -31,4 +34,24 @@ fun setSongPosition(increment: Boolean){
             else --PlayerActivity.songPosition
         }
     }
+}
+
+fun exitApplication(){
+    if(PlayerActivity.musicService != null){
+        PlayerActivity.musicService!!.audioManager.abandonAudioFocus(PlayerActivity.musicService)
+        PlayerActivity.musicService!!.stopForeground(true)
+        PlayerActivity.musicService!!.mediaPlayer!!.release()
+        PlayerActivity.musicService = null}
+    exitProcess(1)
+}
+
+fun favouriteChecker(id: String): Int{
+    PlayerActivity.isFavourite = false
+    return -1
+}
+
+fun getImgArt(path: String): ByteArray? {
+    val retriever = MediaMetadataRetriever()
+    retriever.setDataSource(path)
+    return retriever.embeddedPicture
 }

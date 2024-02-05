@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.music.databinding.MusicViewBinding
 
-class MusicAdapter(private val context: Context, private val musicList:ArrayList<Music>) : RecyclerView.Adapter<MusicAdapter.MyHolder>() {
+class MusicAdapter(private val context: Context, private var musicList:ArrayList<Music>) : RecyclerView.Adapter<MusicAdapter.MyHolder>() {
     class MyHolder(binding: MusicViewBinding) : RecyclerView.ViewHolder(binding.root) {
         val title = binding.songNameMV
         val album = binding.songAlbumMV
@@ -46,6 +46,7 @@ class MusicAdapter(private val context: Context, private val musicList:ArrayList
         }
     }
 
+
     override fun getItemCount(): Int {
        return musicList.size
     }
@@ -56,4 +57,5 @@ class MusicAdapter(private val context: Context, private val musicList:ArrayList
         intent.putExtra("class", ref)
         ContextCompat.startActivity(context, intent, null)
     }
+
 }
