@@ -27,18 +27,17 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-    @SuppressLint("SuspiciousIndentation")
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-     //   requestRuntimePermission()
+        //   requestRuntimePermission()
         setTheme(R.style.Theme_Music)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         if (requestRuntimePermission())
-        initializeLayout()
+            initializeLayout()
 
     }
 

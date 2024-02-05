@@ -1,28 +1,18 @@
 package com.example.music.service
 
-import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Binder
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import com.example.music.ApplicationClass
-import com.example.music.MainActivity
-import com.example.music.NotificationReceiver
 import com.example.music.PlayerActivity
 import com.example.music.R
 import com.example.music.formatDuration
 import com.example.music.fragment.NowPlaying
-import com.example.music.getImgArt
 
 class MusicService:Service(), AudioManager.OnAudioFocusChangeListener {
     private var myBinder = MyBinder()
@@ -42,99 +32,6 @@ class MusicService:Service(), AudioManager.OnAudioFocusChangeListener {
         }
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
-    fun showNotification(playPauseBtn: Int){
-        val intent = Intent(baseContext, MainActivity::class.java)
-
-        val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_IMMUTABLE
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
-
-        val contentIntent = PendingIntent.getActivity(this, 0, intent, flag)
-
-        val prevIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PREVIOUS)
-        val prevPendingIntent = PendingIntent.getBroadcast(baseContext, 0, prevIntent, flag)
-
-        val playIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PLAY)
-        val playPendingIntent = PendingIntent.getBroadcast(baseContext, 0, playIntent, flag)
-
-        val nextIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.NEXT)
-        val nextPendingIntent = PendingIntent.getBroadcast(baseContext, 0, nextIntent, flag)
-
-        val exitIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.EXIT)
-        val exitPendingIntent = PendingIntent.getBroadcast(baseContext, 0, exitIntent, flag)
-
-        val imgArt = getImgArt(PlayerActivity.musicListPA[PlayerActivity.songPosition].path)
-        val image = if(imgArt != null){
-            BitmapFactory.decodeByteArray(imgArt, 0, imgArt.size)
-        }else{
-            BitmapFactory.decodeResource(resources, R.drawable.music_player_icon_slash_screen)
-        }
-
-            val notification = androidx.core.app.NotificationCompat.Builder(baseContext, ApplicationClass.CHANNEL_ID)
-            .setContentIntent(contentIntent)
-            .setContentTitle(PlayerActivity.musicListPA[PlayerActivity.songPosition].title)
-            .setContentText(PlayerActivity.musicListPA[PlayerActivity.songPosition].artist)
-            .setSmallIcon(R.drawable.music_icon)
-            .setLargeIcon(image)
-            .setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken))
-            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
-            .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC)
-            .setOnlyAlertOnce(true)
-            .addAction(R.drawable.previous_icon, "Previous", prevPendingIntent)
-            .addAction(playPauseBtn, "Play", playPendingIntent)
-            .addAction(R.drawable.next_icon, "Next", nextPendingIntent)
-            .addAction(R.drawable.exit_icon, "Exit", exitPendingIntent)
-            .build()
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            val playbackSpeed = if(PlayerActivity.isPlaying) 1F else 0F
-            mediaSession.setMetadata(MediaMetadataCompat.Builder()
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mediaPlayer!!.duration.toLong())
-                .build())
-            val playBackState = PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PLAYING, mediaPlayer!!.currentPosition.toLong(), playbackSpeed)
-                .setActions(PlaybackStateCompat.ACTION_SEEK_TO)
-                .build()
-            mediaSession.setPlaybackState(playBackState)
-            mediaSession.setCallback(object: MediaSessionCompat.Callback(){
-
-                //called when headphones buttons are pressed
-                //currently only pause or play music on button click
-                override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
-                    if(PlayerActivity.isPlaying){
-                        //pause music
-                        PlayerActivity.binding.playPauseBtnPA.setIconResource(R.drawable.play_icon)
-                        NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.play_icon)
-                        PlayerActivity.isPlaying = false
-                        mediaPlayer!!.pause()
-                        showNotification(R.drawable.play_icon)
-                    }else{
-                        //play music
-                        PlayerActivity.binding.playPauseBtnPA.setIconResource(R.drawable.pause_icon)
-                        NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.pause_icon)
-                        PlayerActivity.isPlaying = true
-                        mediaPlayer!!.start()
-                        showNotification(R.drawable.pause_icon)
-                    }
-                    return super.onMediaButtonEvent(mediaButtonEvent)
-                }
-                override fun onSeekTo(pos: Long) {
-                    super.onSeekTo(pos)
-                    mediaPlayer!!.seekTo(pos.toInt())
-                    val playBackStateNew = PlaybackStateCompat.Builder()
-                        .setState(PlaybackStateCompat.STATE_PLAYING, mediaPlayer!!.currentPosition.toLong(), playbackSpeed)
-                        .setActions(PlaybackStateCompat.ACTION_SEEK_TO)
-                        .build()
-                    mediaSession.setPlaybackState(playBackStateNew)
-                }
-            })
-        }
-
-        startForeground(13, notification)
-    }
     fun createMediaPlayer(){
         try {
             if (mediaPlayer == null) mediaPlayer = MediaPlayer()

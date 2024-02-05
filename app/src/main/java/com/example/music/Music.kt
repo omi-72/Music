@@ -1,6 +1,5 @@
 package com.example.music
 
-import android.media.MediaMetadataRetriever
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -45,13 +44,4 @@ fun exitApplication(){
     exitProcess(1)
 }
 
-fun favouriteChecker(id: String): Int{
-    PlayerActivity.isFavourite = false
-    return -1
-}
 
-fun getImgArt(path: String): ByteArray? {
-    val retriever = MediaMetadataRetriever()
-    retriever.setDataSource(path)
-    return retriever.embeddedPicture
-}
