@@ -21,6 +21,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         lateinit var MusicListMA : ArrayList<Music>
+        lateinit var musicListSearch : ArrayList<Music>
+        var search: Boolean = false
+
+
     }
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -20,6 +20,8 @@ class MusicAdapter(private val context: Context, private val musicList:ArrayList
 
     }
 
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MusicAdapter.MyHolder {
         return MyHolder(MusicViewBinding.inflate(LayoutInflater.from(context), parent, false))
     }
@@ -34,14 +36,24 @@ class MusicAdapter(private val context: Context, private val musicList:ArrayList
             .into(holder.image)
 
         holder.root.setOnClickListener {
-            val intent = Intent(context, PlayerActivity::class.java)
-            intent.putExtra("index", position)
-            intent.putExtra("class", "MusicAdapter")
-            ContextCompat.startActivity(context,intent, null)
+            when{
+                MainActivity.search -> sendIntent(ref = "MusicAdapterSearch", pos = position)
+                musicList[position].id == PlayerActivity.nowPlayingId ->
+                    sendIntent(ref = "NowPlaying", pos = PlayerActivity.songPosition)
+                else->sendIntent(ref="MusicAdapter", pos = position)
+            }
+
         }
     }
 
     override fun getItemCount(): Int {
        return musicList.size
+    }
+
+    private fun sendIntent(ref: String, pos: Int){
+        val intent = Intent(context, PlayerActivity::class.java)
+        intent.putExtra("index", pos)
+        intent.putExtra("class", ref)
+        ContextCompat.startActivity(context, intent, null)
     }
 }
