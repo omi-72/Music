@@ -24,7 +24,6 @@ class NowPlaying : Fragment() {
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
         val view = inflater.inflate(R.layout.fragment_now_playing, container, false)
         binding = FragmentNowPlayingBinding.bind(view)
         binding.root.visibility = View.INVISIBLE
@@ -72,6 +71,7 @@ class NowPlaying : Fragment() {
         PlayerActivity.isPlaying = true
         PlayerActivity.musicService!!.mediaPlayer!!.start()
         binding.playPauseBtnNP.setIconResource(R.drawable.pause_icon)
+        PlayerActivity.binding.nextBtnPA.setIconResource(R.drawable.pause_icon)
 
     }
 
@@ -79,6 +79,8 @@ class NowPlaying : Fragment() {
         PlayerActivity.isPlaying = false
         PlayerActivity.musicService!!.mediaPlayer!!.pause()
         binding.playPauseBtnNP.setIconResource(R.drawable.play_icon)
+        PlayerActivity.binding.nextBtnPA.setIconResource(R.drawable.play_icon)
+
     }
 
 }

@@ -68,7 +68,7 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
     private fun initializeLayout(){
         songPosition = intent.getIntExtra("index", 0)
         when(intent.getStringExtra("class")){
-            "Now Playing" ->{
+            "NowPlaying" ->{
                 setLayout()
                 binding.tvSeekBarStart.text = formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
                 binding.tvSeekBarEnd.text = formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
@@ -77,7 +77,7 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
                 if(isPlaying) binding.playPauseBtnPA.setIconResource(R.drawable.pause_icon)
                 else binding.playPauseBtnPA.setIconResource(R.drawable.play_icon)
             }
-            "MusicAdapter Search" -> initServiceAndPlaylist(MainActivity.musicListSearch, shuffle = false)
+            "MusicAdapterSearch" -> initServiceAndPlaylist(MainActivity.musicListSearch, shuffle = false)
             "MusicAdapter" -> initServiceAndPlaylist(MainActivity.MusicListMA, shuffle = false)
             "MainActivity" -> initServiceAndPlaylist(MainActivity.MusicListMA, shuffle = true)
 
