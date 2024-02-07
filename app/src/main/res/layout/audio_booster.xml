@@ -8,7 +8,7 @@
 
     <com.lukelorusso.verticalseekbar.VerticalSeekBar
         android:id="@+id/verticalBar"
-        android:layout_width="50dp"
+        android:layout_width="15dp"
         android:layout_height="200dp"
         app:vsb_bar_corner_radius="15dp"
         android:layout_margin="16dp"

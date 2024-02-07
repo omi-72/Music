@@ -14,4 +14,8 @@
     <attr name="dialogTextColor" format="color"/>
     <attr name="dialogBtnBackground" format="color"/>
 
+    <style name="AppTheme.SeekBar" parent="Widget.AppCompat.SeekBar">
+        <item name="colorAccent">#FF2F94</item>
+    </style>
+
 </resources>
